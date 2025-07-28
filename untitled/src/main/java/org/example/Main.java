@@ -1,8 +1,7 @@
 package org.example;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import org.example.config.JPAUtil;
 import jakarta.persistence.TypedQuery;
 import org.example.entity.Person;
 
@@ -10,9 +9,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        // Создаём фабрику EntityManager по имени persistence-unit
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("example-unit");
-        EntityManager em = emf.createEntityManager();
+        // Получаем EntityManager из утилиты, использующей пул соединений
+        EntityManager em = JPAUtil.getEntityManager();
 
         try {
             // Начинаем транзакцию (для RESOURCE_LOCAL обязателен)
@@ -33,7 +31,7 @@ public class Main {
             e.printStackTrace();
         } finally {
             em.close();
-            emf.close();
+            JPAUtil.close();
         }
     }
 }
