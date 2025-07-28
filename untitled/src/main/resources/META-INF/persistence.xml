@@ -9,8 +9,6 @@
         <class>org.example.entity.Person</class>
 
         <properties>
-            <!-- Источник данных и JDBC-параметры передаются программно через JPAUtil -->
-
             <!-- Диалект -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
 
