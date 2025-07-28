@@ -2,8 +2,8 @@ package org.example.dto;
 
 import org.example.config.JPAUtil;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
