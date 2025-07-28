@@ -18,12 +18,7 @@
             <!-- Диалект -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
 
-            <!-- HikariCP в качестве ConnectionProvider -->
-            <property name="hibernate.connection.provider_class"
-                      value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
-            <property name="hibernate.hikari.minimumIdle" value="5"/>
-            <property name="hibernate.hikari.maximumPoolSize" value="10"/>
-            <property name="hibernate.hikari.idleTimeout" value="300000"/>
+            <!-- Источник данных передаётся из JPAUtil -->
 
             <!-- Отладка SQL -->
             <property name="hibernate.show_sql" value="true"/>
