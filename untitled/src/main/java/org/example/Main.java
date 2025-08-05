@@ -1,37 +1,61 @@
 package org.example;
 
-import jakarta.persistence.EntityManager;
-import org.example.config.JPAUtil;
-import jakarta.persistence.TypedQuery;
-import org.example.entity.Person;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class Main {
-    public static void main(String[] args) {
-        // Получаем EntityManager из утилиты, использующей пул соединений
-        EntityManager em = JPAUtil.getEntityManager();
 
-        try {
-            // Начинаем транзакцию (для RESOURCE_LOCAL обязателен)
-            em.getTransaction().begin();
+    public static void main(String[] args) throws java.lang.InterruptedException {
 
-            // Пример: получить всех Person из БД
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p", Person.class);
-            List<Person> people = query.getResultList();
+        DynamicThreadPool dynamicPool = new DynamicThreadPool(
+                /*core=*/ 2,
+                /*max=*/ 20,
+                /*queueCapacity=*/ 6,
+                /*keepAliveSec=*/ 30
+        );
+        TaskManager mgr = new TaskManager(dynamicPool);
 
-            // Выводим в консоль
-            for (Person p : people) {
-                System.out.println(p);
-            }
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            e.printStackTrace();
-        } finally {
-            em.close();
-            JPAUtil.close();
+        for (int i = 1; i <= 30; i++) {
+            String name = "task-" + i;
+            long delay = 10;
+            mgr.addNamedTask(name,
+                    () -> {
+                        log.info("Send request - {}, delay - {}", name, delay);
+                        try {
+                            Thread.sleep(TimeUnit.SECONDS.toMillis(delay/2));
+                        } catch (InterruptedException e) {
+                        }
+                    },
+                    delay
+            );
         }
+
+        mgr.joinAll();
+
+//        Thread.sleep(20_000L);
+//
+//        for (int i = 1; i <= 30; i++) {
+//            String name = "task-" + i;
+//            long delay = 5; // например, разный delay
+//            mgr.addNamedTask(name,
+//                    () -> {
+//                        log.info("Send request - {}, delay - {}", name, delay);
+//                        try {
+//                            Thread.sleep(5_000L);
+//                        } catch (InterruptedException e) {
+//                        }
+//                    },
+//                    delay
+//            );
+//        }
+//
+//        mgr.joinAll();
+//
+//
+//        Thread.sleep(20000L);
+
+        mgr.shutdownThreads();
     }
 }
