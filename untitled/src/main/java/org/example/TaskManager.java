@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.LongAdder;
  * </p>
  */
 @Slf4j
-public class TaskManager {
+public class TaskManager implements AutoCloseable{
     /**
      * Executor для запуска задач.
      */
@@ -141,6 +141,11 @@ public class TaskManager {
             log.error("Прерывание при shutdown окна пула", e);
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        shutdownThreads();
     }
 
     /**
