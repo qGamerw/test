@@ -1,38 +1,18 @@
 package org.example;
 
-import lombok.extern.slf4j.Slf4j;
+import jakarta.persistence.EntityManager;
 
-import java.util.concurrent.TimeUnit;
-
-@Slf4j
 public class Main {
+    public static void main(String[] args) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        em.getTransaction().begin();
 
-    public static void main(String[] args) throws java.lang.InterruptedException {
+        User user = new User("Alice");
+        em.persist(user);
 
-        DynamicThreadPool dynamicPool = new DynamicThreadPool(
-                2,
-                20,
-                6,
-                30
-        );
-        TaskManager mgr = new TaskManager(dynamicPool);
+        em.getTransaction().commit();
+        em.close();
 
-        for (int i = 1; i <= 30; i++) {
-            String name = "task-" + i;
-            long delay = 10;
-            mgr.addNamedTask(name,
-                    () -> {
-                        log.info("Send request - {}, delay - {}", name, delay);
-                        try {
-                            Thread.sleep(TimeUnit.SECONDS.toMillis(delay / 2));
-                        } catch (InterruptedException e) {
-                        }
-                    },
-                    delay
-            );
-        }
-
-        mgr.joinAll();
-//        mgr.shutdownThreads();
+        HibernateUtil.close();
     }
 }
